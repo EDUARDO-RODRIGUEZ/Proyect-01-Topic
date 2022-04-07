@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
 {
+
     public function register()
     {
         return view('welcome');
@@ -15,16 +16,16 @@ class UsuarioController extends Controller
 
     public function save(Request $request)
     {
-        $name = $request->input('name');
-        $email = $request->input('email');
-        $password = $request->input('password');
-
-        Usuario::create([
-            'name' => $name,
-            'email' => $email,
-            'password' =>  Hash::make($password)
+        $request->validate([
+            'name' => 'required|min:3',
+            'email' => 'required|unique:usuarios',
+            'password' => 'required|min:8'
         ]);
 
+        $usuario = new Usuario;
+        $usuario->map($request);
+        $usuario->setPasswordAttribute($request->password);        
+        $usuario->save();
         return redirect()->route('usuario.list');
     }
 
